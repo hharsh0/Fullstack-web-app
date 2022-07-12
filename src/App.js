@@ -25,9 +25,10 @@ function App() {
       {/* Login directly if logged in */}
       <Route path="/signIn">
         {authCtx.isLoggedIn && <Redirect to="/dashboard" />}
+        {!authCtx.isLoggedIn && <SignIn />}
       </Route>
       
-      
+
       {!authCtx.isLoggedIn && (
         <Route path="/signUp">
           <SignUp />

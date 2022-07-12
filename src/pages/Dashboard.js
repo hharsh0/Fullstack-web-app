@@ -18,6 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems, secondaryListItems } from "../components/ListItems";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 function Copyright(props) {
   return (
@@ -145,8 +146,8 @@ function DashboardContent() {
           <Divider />
           <List component="nav">
             {mainListItems}
-            <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
+            {/* <Divider sx={{ my: 1 }} /> */}
+            {/* {secondaryListItems} */}
           </List>
         </Drawer>
         <Box
