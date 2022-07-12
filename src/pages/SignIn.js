@@ -12,7 +12,10 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom"
+import AuthContext from "../store/auth-context"
+import { useHistory } from "react-router-dom";
+
 
 
 function Copyright(props) {
@@ -36,13 +39,66 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+
+  const emailInputRef = React.useRef();
+  const passwordInputRef = React.useRef();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const authCtx = React.useContext(AuthContext);
+  const history = useHistory();
+
   const handleSubmit = (event) => {
     event.preventDefault();
+
+    const enteredEmail = emailInputRef.current.value;
+    const enteredPassword = passwordInputRef.current.value;
+    setIsLoading(true);
     const data = new FormData(event.currentTarget);
+
     console.log({
       email: data.get("email"),
       password: data.get("password"),
     });
+    
+    let url =
+      "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyApAo_WPj4s36I38V_C4yxLcXoHCPYJLMg";
+    
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+        returnSecureToken: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        setIsLoading(false);
+        if (res.ok) {
+          return res.json();
+          // ..
+        } else {
+          return res.json().then((data) => {
+            // show error message
+            console.log(data);
+            let errorMessage = "Authentication failed!";
+            // if (data && data.error && data.error.message) {
+            //    errorMessage = data.error.message;
+            // }
+
+            throw new Error(errorMessage);
+          });
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        authCtx.login(data.idToken);
+        history.replace("/dashboard");
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
 
   return (
@@ -96,6 +152,7 @@ export default function SignIn() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                inputRef={emailInputRef}
               />
               <TextField
                 margin="normal"
@@ -106,22 +163,20 @@ export default function SignIn() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                inputRef={passwordInputRef}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
-              <Link to="/dashboard">
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Sign In
-                </Button>
-              </Link>
-
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
               <Grid container>
                 {/* <Grid item xs>
                   <Link href="#" variant="body2">
